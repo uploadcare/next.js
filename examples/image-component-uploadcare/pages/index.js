@@ -11,11 +11,17 @@ const Index = () => (
         The following is an example of a reference to an image from the{' '}
         Uploadcare CDN at <Code>ucarecdn.com</Code>
       </p>
+      <p>
+        It will be served directly from <Code>ucarecdn.com</Code>, without proxying through Media Proxy.
+      </p>
       <Image alt="Vercel logo" src="https://ucarecdn.com/a6f8abc8-f92e-460a-b7a1-c5cd70a18cdb/vercel.png" width={1000} height={1000} />
       <hr className={styles.hr} />
       <p>
         The following is an example of a reference to an external image at{' '}
         <Code>assets.vercel.com</Code>.
+      </p>
+      <p>
+        It will be proxied through Media Proxy.
       </p>
       <Image
         alt="Next.js logo"
