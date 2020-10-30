@@ -8,10 +8,11 @@ const loaders = new Map<LoaderKey, (props: LoaderProps) => string>([
   ['imgix', imgixLoader],
   ['cloudinary', cloudinaryLoader],
   ['akamai', akamaiLoader],
+  ['uploadcare', uploadcareLoader],
   ['default', defaultLoader],
 ])
 
-type LoaderKey = 'imgix' | 'cloudinary' | 'akamai' | 'default'
+type LoaderKey = 'imgix' | 'cloudinary' | 'akamai' | 'uploadcare' | 'default'
 
 const VALID_LAYOUT_VALUES = [
   'fill',
@@ -547,6 +548,60 @@ function cloudinaryLoader({ root, src, width, quality }: LoaderProps): string {
     paramsString = params.join(',') + '/'
   }
   return `${root}${paramsString}${normalizeSrc(src)}`
+}
+
+function uploadcareLoader({ root, src, width, quality }: LoaderProps): string {
+  const isOnCdn = /^https?:\/\/ucarecdn\.com/.test(src)
+
+  if (process.env.NODE_ENV !== 'production') {
+    if(!isOnCdn && src.startsWith('/')) {
+      throw new Error(
+        `Failed to parse "${src}" in "next/image", Uploadcare loader doesn't support relative images`
+      )
+    }
+
+    if(!isOnCdn && !(/^https?:\/\/.+\.ucr\.io\/?$/.test(root))) {
+      throw new Error(
+        `Failed to parse "${root}" in "next/image", Uploadcare loader expects proxy endpoint like "https://YOUR_PUBLIC_KEY.ucr.io".`
+      )
+    }
+  }
+
+  const filename = src.substring(1 + src.lastIndexOf('/'))
+  const extension = filename
+    .toLowerCase()
+    .substring(1 + src.lastIndexOf('/'))
+    .split('?')[0]
+    .split('#')[0]
+    .split('.')[1]
+
+  if(['svg', 'gif'].includes(extension)) {
+    return isOnCdn ? src : `${root.replace(/\/$/, '')}${src}`
+  }
+
+  const maxResizeWidth = Math.min(Math.max(width, 0), 3000)
+  const params = ['format/auto', `resize/${maxResizeWidth}x`]
+
+  if(quality) {
+    const names = ['lightest', 'lighter', 'normal', 'better', 'best']
+    const intervals  = [0, 38, 70, 80, 87, 100]
+    const nameIdx = intervals.findIndex((min, idx) => {
+      const max = intervals[idx + 1]
+      return min <= quality && quality <= max
+    })
+    params.push(`quality/${names[nameIdx]}`)
+  } else {
+    params.push('quality/smart')
+  }
+
+  const paramsString = '/-/' + params.join('/-/') + '/'
+
+  if(isOnCdn) {
+    const withoutFilename = src.replace(filename ? new RegExp('/' + filename + '$') : /\/$/, '')
+    return `${withoutFilename}${paramsString}${filename}`
+  }
+
+  return `${root.replace(/\/$/, '')}${paramsString}${src}`
 }
 
 function defaultLoader({ root, src, width, quality }: LoaderProps): string {
