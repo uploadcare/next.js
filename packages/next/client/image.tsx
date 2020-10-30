@@ -554,13 +554,13 @@ function uploadcareLoader({ root, src, width, quality }: LoaderProps): string {
   const isOnCdn = /^https?:\/\/ucarecdn\.com/.test(src)
 
   if (process.env.NODE_ENV !== 'production') {
-    if(!isOnCdn && src.startsWith('/')) {
+    if (!isOnCdn && src.startsWith('/')) {
       throw new Error(
         `Failed to parse "${src}" in "next/image", Uploadcare loader doesn't support relative images`
       )
     }
 
-    if(!isOnCdn && !(/^https?:\/\/.+\.ucr\.io\/?$/.test(root))) {
+    if (!isOnCdn && !/^https?:\/\/.+\.ucr\.io\/?$/.test(root)) {
       throw new Error(
         `Failed to parse "${root}" in "next/image", Uploadcare loader expects proxy endpoint like "https://YOUR_PUBLIC_KEY.ucr.io".`
       )
@@ -575,16 +575,16 @@ function uploadcareLoader({ root, src, width, quality }: LoaderProps): string {
     .split('#')[0]
     .split('.')[1]
 
-  if(['svg', 'gif'].includes(extension)) {
+  if (['svg', 'gif'].includes(extension)) {
     return isOnCdn ? src : `${root.replace(/\/$/, '')}${src}`
   }
 
   const maxResizeWidth = Math.min(Math.max(width, 0), 3000)
   const params = ['format/auto', `resize/${maxResizeWidth}x`]
 
-  if(quality) {
+  if (quality) {
     const names = ['lightest', 'lighter', 'normal', 'better', 'best']
-    const intervals  = [0, 38, 70, 80, 87, 100]
+    const intervals = [0, 38, 70, 80, 87, 100]
     const nameIdx = intervals.findIndex((min, idx) => {
       const max = intervals[idx + 1]
       return min <= quality && quality <= max
@@ -596,8 +596,11 @@ function uploadcareLoader({ root, src, width, quality }: LoaderProps): string {
 
   const paramsString = '/-/' + params.join('/-/') + '/'
 
-  if(isOnCdn) {
-    const withoutFilename = src.replace(filename ? new RegExp('/' + filename + '$') : /\/$/, '')
+  if (isOnCdn) {
+    const withoutFilename = src.replace(
+      filename ? new RegExp('/' + filename + '$') : /\/$/,
+      ''
+    )
     return `${withoutFilename}${paramsString}${filename}`
   }
 
