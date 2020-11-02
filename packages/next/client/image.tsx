@@ -597,10 +597,7 @@ function uploadcareLoader({ root, src, width, quality }: LoaderProps): string {
   const paramsString = '/-/' + params.join('/-/') + '/'
 
   if (isOnCdn) {
-    const withoutFilename = src.replace(
-      filename ? new RegExp('/' + filename + '$') : /\/$/,
-      ''
-    )
+    const withoutFilename = src.slice(0, src.lastIndexOf('/'))
     return `${withoutFilename}${paramsString}${filename}`
   }
 
