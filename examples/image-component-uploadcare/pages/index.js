@@ -34,7 +34,7 @@ const Index = () => (
         height={400}
       />
       <hr className={styles.hr} />
-      <p>SVGs and GIFs will be just proxified or served, without transformations</p>
+      <p>SVGs and GIFs will be used without transformations</p>
       <Image
         alt="Next.js logo"
         src="https://ucarecdn.com/375bba4b-35db-4cb8-8fc7-7540625f2181/next.svg"
