@@ -18,7 +18,7 @@ module.exports = {
     // limit of 50 domains values
     domains: [],
     path: '/_next/image',
-    // loader can be 'default', 'imgix', 'cloudinary', 'akamai' or 'uploadcare'
+    // loader can be 'default', 'imgix', 'cloudinary', 'akamai', or 'uploadcare'
     loader: 'default',
   },
 }

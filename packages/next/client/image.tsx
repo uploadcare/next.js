@@ -570,7 +570,6 @@ function uploadcareLoader({ root, src, width, quality }: LoaderProps): string {
   const filename = src.substring(1 + src.lastIndexOf('/'))
   const extension = filename
     .toLowerCase()
-    .substring(1 + src.lastIndexOf('/'))
     .split('?')[0]
     .split('#')[0]
     .split('.')[1]
@@ -579,10 +578,19 @@ function uploadcareLoader({ root, src, width, quality }: LoaderProps): string {
     return isOnCdn ? src : `${root.replace(/\/$/, '')}${src}`
   }
 
+  /**
+   * Output image dimensions is limited to 3000px
+   * It can be increased by explicitly setting /format/jpeg/
+   */
   const maxResizeWidth = Math.min(Math.max(width, 0), 3000)
+  // Demo: https://ucarecdn.com/a6f8abc8-f92e-460a-b7a1-c5cd70a18cdb/-/format/auto/-/resize/300x/vercel.png
   const params = ['format/auto', `resize/${maxResizeWidth}x`]
 
   if (quality) {
+    /**
+     * Uploadcare doesn't support integer-based quality modificators,
+     * so we need to map them onto uploadcare's equivalents
+     */
     const names = ['lightest', 'lighter', 'normal', 'better', 'best']
     const intervals = [0, 38, 70, 80, 87, 100]
     const nameIdx = intervals.findIndex((min, idx) => {

@@ -34,6 +34,20 @@ const Index = () => (
         height={400}
       />
       <hr className={styles.hr} />
+      <p>SVGs and GIFs will be just proxified or served, without transformations</p>
+      <Image
+        alt="Next.js logo"
+        src="https://ucarecdn.com/375bba4b-35db-4cb8-8fc7-7540625f2181/next.svg"
+        width={64}
+        height={64}
+      />
+      <Image
+        alt="Vercel logo"
+        src="https://ucarecdn.com/0f23a269-13eb-4fc9-b378-86f224380d26/vercel.gif"
+        width={64}
+        height={64}
+      />
+      <hr className={styles.hr} />
       Checkout the documentation for{' '}
       <a href="https://nextjs.org/docs/basic-features/image-optimization#uploadcare-loader">
         Image Optimization
